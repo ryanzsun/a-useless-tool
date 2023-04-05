@@ -55,34 +55,8 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function addControlButtons() {
-    const forwardBtn = document.createElement("button");
-    forwardBtn.innerText = ">";
-    forwardBtn.classList.add("control-btn");
+    const forwardBtn = document.getElementById("forward-btn");
     forwardBtn.addEventListener("click", function () {
-      const data = {
-        action: "backward",
-        imageUrl: urlInput.value.trim(),
-        canvasWidth: canvas.width,
-        canvasHeight: canvas.height,
-      };
-      fetch("/api/image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then(response => response.json())
-        .then(data => {
-          // handle response from server
-        })
-        .catch(error => console.error(error));
-    });
-
-    const backwardBtn = document.createElement("button");
-    backwardBtn.innerText = "<";
-    backwardBtn.classList.add("control-btn");
-    backwardBtn.addEventListener("click", function () {
       const data = {
         action: "forward",
         imageUrl: urlInput.value.trim(),
@@ -99,13 +73,51 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
           // handle response from server
+          console.log(data);
+          const img = new Image();
+          img.src = data.url;
+          img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          };
+          // update the URL input with the new URL
+          urlInput.value = data.url;
         })
         .catch(error => console.error(error));
     });
-
-    const editBtn = document.createElement("button");
-    editBtn.innerText = "修改";
-    editBtn.classList.add("control-btn");
+  
+    const backwardBtn = document.getElementById("backward-btn");
+    backwardBtn.addEventListener("click", function () {
+      const data = {
+        action: "backward",
+        imageUrl: urlInput.value.trim(),
+        canvasWidth: canvas.width,
+        canvasHeight: canvas.height,
+      };
+      fetch("/api/image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(data => {
+          // handle response from server
+          console.log(data);
+          const img = new Image();
+          img.src = data.url;
+          img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          };
+          // update the URL input with the new URL
+          urlInput.value = data.url;
+        })
+        .catch(error => console.error(error));
+    });
+  
+    const editBtn = document.getElementById("edit-btn");
     editBtn.addEventListener("click", function () {
       const data = {
         action: "edit",
@@ -123,13 +135,12 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
           // handle response from server
+          console.log(data);
         })
         .catch(error => console.error(error));
     });
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "删除";
-    deleteBtn.classList.add("control-btn");
+  
+    const deleteBtn = document.getElementById("delete-btn");
     deleteBtn.addEventListener("click", function () {
       const data = {
         action: "delete",
@@ -147,21 +158,12 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
           // handle response from server
+          console.log(data);
         })
         .catch(error => console.error(error));
     });
-
-    const container = document.querySelector(".container");
-    container.appendChild(forwardBtn);
-    container.appendChild(backwardBtn);
-    container.appendChild(editBtn);
-    container.appendChild(deleteBtn);
-
+  
     // hide the buttons initially
-    forwardBtn.style.display = "none";
-    backwardBtn.style.display = "none";
-    editBtn.style.display = "none";
-    deleteBtn.style.display = "none";
   }
 
   if (submitBtn) { // Check if submitBtn exists before adding event listener
@@ -182,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   window.onload = function() {
     // Set default value for input box
-    urlInput.value = "http://localhost:8000/Front120/F91.jpg";
+    urlInput.value = "Front120/F91.jpg";
     addControlButtons();
   };
 });
